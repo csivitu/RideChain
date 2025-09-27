@@ -26,7 +26,9 @@ contract RideChain{
     event RideFinalized(bytes32 indexed rideId, address driver, uint120 payout);
     event RideReversed(bytes32 indexed rideId, address rider, uint120 refund, uint120 penalty);
     event EmergencyRelease(bytes32 indexed rideId, uint120 penalty);
-
+    //address used _ridetoken = 0xabcdefabcdefabcdefabcdefabcdefabcdefabcd
+    //address used _publicGoodFund = 0xabcdefabcdefabcdefabcdefabcdefabcdefabcd
+    //the thing i learnt is the token should start with 0x and all lowercase and can have numbers for this constructor
     constructor(address _rideToken, address _publicGoodFund) {
         RIDE = IERC20(_rideToken);
         publicGoodFund = _publicGoodFund;
@@ -36,7 +38,7 @@ contract RideChain{
         address _driver,
         uint120 _amount,
         bytes32 _commitment,
-        uint64 _startTime 
+        uint64 _startTime
     ) external{
         require(_driver != address(0), "Invalid driver");
         require(commitments[_commitment], "Commitment not registered");
@@ -66,7 +68,7 @@ contract RideChain{
         ride.status = 2;
         RIDE.transfer(ride.rider, refund);
         RIDE.transfer(publicGoodFund, penalty);
-         
+
         //!-24 hour lockout feature.
         failedReversals[msg.sender]++;
         if (failedReversals[msg.sender] >= 3) {
